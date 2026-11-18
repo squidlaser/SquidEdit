@@ -1,5 +1,5 @@
 /* Service worker di Studio Foto: rende l'app installabile e utilizzabile offline. */
-const VERSION = 'studio-foto-v2';
+const VERSION = 'studio-foto-v3';
 const SHELL = [
   './',
   './index.html',
@@ -29,10 +29,10 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // pagine dell'app: prima la rete (aggiornamenti), poi la copia salvata
+  // pagine dell'app: prima la rete (sempre la versione più recente), poi la copia salvata
   if (url.origin === location.origin) {
     e.respondWith(
-      fetch(req)
+      fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
         .then(res => {
           if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
           return res;
